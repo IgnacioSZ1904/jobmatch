@@ -1,0 +1,5 @@
+{"data": [
+ {"slug": "backend-developer-python-acme-labs-berlin-123", "company_name": "Acme Labs GmbH", "title": "Senior Python Backend Engineer", "description": "<p>Python, Django, PostgreSQL. Remote within Europe.</p>", "remote": true, "url": "https://www.arbeitnow.com/jobs/companies/acme-labs/backend-developer-python-123", "tags": ["Python", "Backend"], "job_types": ["Full Time"], "location": "Berlin", "created_at": 1761818400},
+ {"slug": "fullstack-entwickler-hamburg-456", "company_name": "Nordwerk GmbH", "title": "Fullstack Entwickler (m/w/d)", "description": "<p>Vue.js, Node.js, MongoDB. Sehr gute Deutschkenntnisse (German C1).</p>", "remote": false, "url": "https://www.arbeitnow.com/jobs/companies/nordwerk/fullstack-456", "tags": ["JavaScript"], "job_types": ["Full Time"], "location": "Hamburg", "created_at": 1761732000},
+ {"slug": "broken-offer-789", "company_name": "X"}
+], "links": {"next": null}, "meta": {}}
