@@ -5,7 +5,13 @@ from ui_common import get_embedder, get_repo, require_profile
 
 from jobmatch.config import settings
 from jobmatch.connectors import all_connectors
-from jobmatch.services import list_offers, refresh_offers, score_pending
+from jobmatch.search_links import build_links
+from jobmatch.services import (
+    import_manual_offer,
+    list_offers,
+    refresh_offers,
+    score_pending,
+)
 
 st.set_page_config(page_title="JobMatch", page_icon="🎯", layout="wide")
 st.title("🎯 JobMatch")
@@ -44,9 +50,61 @@ c1.metric("Ofertas en ranking", len(ranked))
 c2.metric("Nuevas sin ver", len(new))
 c3.metric("Nuevas con >80 puntos", sum(r.score.total > 80 for r in new))
 
-st.subheader("Fuentes")
-for c in all_connectors():
-    st.write(f"{'🟢' if c.is_configured() else '⚪'} {c.name}")
-
 if ranked:
     st.page_link("pages/2_Ofertas.py", label="Ver ofertas →", icon="📋")
+
+st.subheader("Fuentes")
+for c in all_connectors():
+    if c.is_configured():
+        st.write(f"🟢 {c.name}")
+    else:
+        st.write(f"⚪ {c.name} — desactivada: faltan las credenciales en `.env`")
+
+st.subheader("Buscar en otros portales")
+st.caption(
+    "LinkedIn, Indeed y otros portales no tienen API pública: estos enlaces abren la "
+    "búsqueda con tu perfil. Si una oferta te interesa, añádela abajo para puntuarla."
+)
+cols = st.columns(4)
+for col, link in zip(cols, build_links(profile), strict=False):
+    col.link_button(link.portal, link.url, use_container_width=True)
+
+with st.expander("➕ Añadir una oferta manualmente"):
+    with st.form("manual_offer", clear_on_submit=True):
+        url = st.text_input("URL de la oferta")
+        title = st.text_input("Título del puesto *")
+        c1, c2 = st.columns(2)
+        company = c1.text_input("Empresa")
+        location = c2.text_input("Ubicación", help="Ej.: Málaga (híbrido) o Remoto")
+        text = st.text_area(
+            "Texto de la oferta *", height=200, help="Copia y pega la descripción completa."
+        )
+        submitted = st.form_submit_button("Añadir y puntuar", type="primary")
+    if submitted:
+        try:
+            offer, is_new = import_manual_offer(
+                repo,
+                profile,
+                url=url,
+                title=title,
+                description=text,
+                company=company,
+                location=location,
+                embedder=get_embedder(),
+            )
+        except ValueError as exc:
+            st.error(str(exc))
+        else:
+            row = next(
+                (
+                    r
+                    for r in list_offers(repo, profile) + list_offers(repo, profile, filtered=True)
+                    if r.offer.id == offer.id
+                ),
+                None,
+            )
+            verb = "Añadida" if is_new else "Actualizada"
+            if offer.duplicate_of:
+                st.info(f"{verb}, pero ya tenías esta oferta de otra fuente.")
+            elif row:
+                st.success(f"{verb}: {offer.title} — {row.score.total:.0f} puntos.")

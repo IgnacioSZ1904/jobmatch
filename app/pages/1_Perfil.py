@@ -80,7 +80,12 @@ def widget(q: Question):
         )
     if q.kind == "select":
         return st.selectbox(
-            q.label, q.options, index=q.options.index(value) if value in q.options else 0, key=key
+            q.label,
+            q.options,
+            index=q.options.index(value) if value in q.options else 0,
+            key=key,
+            help=q.help or None,
+            format_func=lambda v: q.labels.get(v, v),
         )
     if q.kind == "text":
         return st.text_input(q.label, value or "", key=key, help=q.help or None)

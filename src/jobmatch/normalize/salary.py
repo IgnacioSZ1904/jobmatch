@@ -9,7 +9,7 @@ from jobmatch.config import FX_TO_EUR
 _CURRENCY = [("USD", r"\$|usd|us\$"), ("GBP", r"£|gbp"), ("CHF", r"chf"), ("EUR", r"€|eur|euros?")]
 _NUMBER = re.compile(r"(\d{1,3}(?:[.,]\d{3})+|\d+(?:[.,]\d+)?)\s*(k|mil)?", re.I)
 _HOURLY = re.compile(r"/\s*h(ou)?r|per hour|por hora|hourly", re.I)
-_MONTHLY = re.compile(r"/\s*mo(nth)?|per month|al mes|mensual|monthly", re.I)
+_MONTHLY = re.compile(r"/\s*mo(nth)?|/\s*mes|per month|al mes|mensual|monthly", re.I)
 
 
 def _currency(text: str) -> str:

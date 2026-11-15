@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
@@ -11,7 +12,8 @@ from jobmatch.config import settings
 from jobmatch.connectors import Connector, SearchQuery, all_connectors
 from jobmatch.connectors.base import save_raw
 from jobmatch.dedup import find_duplicate
-from jobmatch.models import JobOffer, OfferScore, OfferStatus
+from jobmatch.models import JobOffer, OfferScore, OfferStatus, offer_id
+from jobmatch.normalize.offer import enrich
 from jobmatch.profile.model import Profile
 from jobmatch.scoring import semantic
 from jobmatch.scoring.scorer import score_offer
@@ -153,6 +155,46 @@ def _similarities(
         o.id: semantic.rescale(semantic.cosine(profile_vec, semantic.unpack(o.embedding)), embedder)
         for o in offers
     }
+
+
+def import_manual_offer(
+    repo: Repository,
+    profile: Profile,
+    *,
+    url: str,
+    title: str,
+    description: str,
+    company: str = "",
+    location: str = "",
+    embedder: semantic.Embedder | None = None,
+) -> tuple[JobOffer, bool]:
+    """Añade una oferta pegada a mano (p. ej. de LinkedIn) y la puntúa.
+
+    Devuelve la oferta y si es nueva. Si coincide con otra ya guardada de otra
+    fuente, se marca como duplicada de ella.
+    """
+    url, title, description = url.strip(), title.strip(), description.strip()
+    if not title or not description:
+        raise ValueError("Hacen falta al menos el título y el texto de la oferta.")
+    source_id = url or hashlib.sha1(f"{title}\n{description}".encode()).hexdigest()[:16]
+    offer = JobOffer(
+        id=offer_id("manual", source_id),
+        source="manual",
+        source_id=source_id,
+        url=url,
+        title=title,
+        company=company.strip(),
+        description=description,
+        location_text=location.strip(),
+    )
+    offer = enrich(offer)
+    is_new = repo.upsert(offer)
+    if is_new:
+        original = find_duplicate(offer, repo.recent_originals())
+        if original:
+            repo.mark_duplicate(offer.id, original.id)
+    score_pending(repo, profile, embedder, force=not is_new)
+    return offer, is_new
 
 
 def list_offers(

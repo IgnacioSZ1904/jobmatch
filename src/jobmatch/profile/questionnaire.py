@@ -9,7 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Literal
 
-from jobmatch.models import Modality, Seniority
+from jobmatch.models import SENIORITY_LABELS, Modality, Seniority
 from jobmatch.profile.model import CONTRACTS, LANGUAGE_LEVELS, ROLES
 
 Kind = Literal[
@@ -24,6 +24,7 @@ class Question:
     kind: Kind
     options: list[str] = field(default_factory=list)
     help: str = ""
+    labels: dict[str, str] = field(default_factory=dict)  # texto visible de cada opción
 
 
 @dataclass(frozen=True)
@@ -50,7 +51,13 @@ STEPS: list[Step] = [
         [
             Question("years_experience", "Años de experiencia total", "number"),
             Question(
-                "seniority", "Nivel", "select", [s.value for s in Seniority if s != "unknown"]
+                "seniority",
+                "Nivel",
+                "select",
+                [s.value for s in Seniority if s != "unknown"],
+                help="Si solo tienes experiencia en prácticas o beca, elige Prácticas: "
+                "encajará igual con ofertas junior.",
+                labels=SENIORITY_LABELS,
             ),
         ],
     ),

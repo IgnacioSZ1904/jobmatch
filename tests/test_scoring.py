@@ -67,3 +67,16 @@ def test_hashing_embedder_similarity():
     assert cosine(a, b) > cosine(a, c)
     assert 0 <= rescale(cosine(a, b), emb) <= 1
     assert abs(cosine(unpack(pack(a)), a) - 1) < 1e-5
+
+
+def test_internship_counts_as_junior(profile):
+    profile.seniority = Seniority.INTERN
+    for level in (Seniority.INTERN, Seniority.JUNIOR):
+        result = score_offer(profile, make_offer(seniority=level))
+        assert result.components["seniority"]["points"] == 15
+    assert (
+        score_offer(profile, make_offer(seniority=Seniority.MID)).components["seniority"]["points"]
+        == 7.5
+    )
+    detail = score_offer(profile, make_offer(seniority=Seniority.JUNIOR)).components["seniority"]
+    assert detail["detail"] == "Pide Junior, tú Prácticas"

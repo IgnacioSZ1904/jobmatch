@@ -13,7 +13,13 @@ semántica con embeddings). Cada oferta muestra el **desglose de por qué** tien
 - **Importación desde LinkedIn**: sube el PDF de tu perfil (*Más → Guardar en PDF*) y se
   prerrellenan tecnologías, años de experiencia, puesto, ubicación, idiomas y resumen.
 - **Escala de niveles 1–5** explicada (Básico, Principiante, Autónomo, Avanzado, Experto).
-- **Fuentes**: Remotive, Arbeitnow y RemoteOK (APIs públicas, sin credenciales).
+- **Fuentes**: Remotive, Arbeitnow y RemoteOK (APIs públicas, sin credenciales) e InfoJobs
+  (API oficial; requiere registrar una app gratuita en developer.infojobs.net y poner
+  `INFOJOBS_CLIENT_ID` e `INFOJOBS_CLIENT_SECRET` en `.env`).
+- **Otros portales** (LinkedIn, InfoJobs web, Indeed, Tecnoempleo): enlaces de búsqueda generados
+  con tu perfil y **importación manual** de ofertas (URL + texto) para puntuarlas igual.
+- **Nivel "Prácticas"** en el perfil y detección de ofertas de prácticas o beca; al puntuar,
+  prácticas y junior cuentan como el mismo nivel.
 - **Normalización**: tecnologías con taxonomía y alias, seniority y años, salario a EUR/año,
   modalidad (remoto/híbrido/presencial), alcance del remoto, país e idiomas.
 - **Deduplicación** dentro de cada fuente y entre fuentes (empresa + título, `rapidfuzz`).
@@ -76,8 +82,7 @@ ruff check .
 
 ## Roadmap
 
-- **Fase 1 (resto)**: Adzuna e InfoJobs (España), importación manual de ofertas, página de
-  análisis de mercado.
+- **Fase 1 (resto)**: Adzuna (España) y página de análisis de mercado.
 - **Fase 2**: We Work Remotely, explicación opcional con LLM, exportar a CSV/Excel, pesos
   ajustables desde la UI.
 - **Fase 3**: API FastAPI + frontend React.

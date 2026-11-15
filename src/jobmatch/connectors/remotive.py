@@ -14,7 +14,7 @@ _CONTRACTS = {
     "contract": "freelance",
     "freelance": "freelance",
     "part_time": "temporal",
-    "internship": "temporal",
+    "internship": "prácticas",
 }
 
 

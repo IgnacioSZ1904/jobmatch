@@ -3,8 +3,9 @@
 import streamlit as st
 from ui_common import get_repo, require_profile
 
+from jobmatch.connectors import all_connectors
 from jobmatch.connectors.remoteok import ATTRIBUTION
-from jobmatch.models import Modality, OfferStatus
+from jobmatch.models import SENIORITY_LABELS, Modality, OfferStatus
 from jobmatch.scoring.scorer import LABELS
 from jobmatch.services import list_offers, set_status
 
@@ -25,7 +26,7 @@ STATUS_LABELS = {
 with st.sidebar:
     st.header("Filtros")
     min_score = st.slider("Puntuación mínima", 0, 100, 40)
-    sources = st.multiselect("Fuentes", ["remotive", "arbeitnow", "remoteok"])
+    sources = st.multiselect("Fuentes", [c.name for c in all_connectors()] + ["manual"])
     modalities = st.multiselect("Modalidad", [m.value for m in Modality])
     statuses = st.multiselect(
         "Estado",
@@ -55,8 +56,8 @@ def render(rows, show_reason=False):
                 col.caption(c["detail"])
             for p in b.get("penalties", []):
                 st.error(p)
-            meta = [o.source, o.modality.value, o.location_text, o.seniority.value]
-            st.caption(" · ".join(m for m in meta if m and m != "unknown"))
+            meta = [o.source, o.modality.value, o.location_text, SENIORITY_LABELS[o.seniority]]
+            st.caption(" · ".join(m for m in meta if m and m not in ("unknown", "Sin indicar")))
             st.markdown(f"[Ver oferta original]({o.url})")
             dups = repo.duplicates_of(o.id)
             if dups:
@@ -89,4 +90,6 @@ with tab_ranked:
 with tab_filtered:
     render(list_offers(repo, profile, filtered=True, sources=sources or None), show_reason=True)
 
-st.caption(ATTRIBUTION + " · Remotive (remotive.com) · Arbeitnow (arbeitnow.com)")
+st.caption(
+    ATTRIBUTION + " · Remotive (remotive.com) · Arbeitnow (arbeitnow.com) · InfoJobs (infojobs.net)"
+)

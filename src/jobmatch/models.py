@@ -30,11 +30,22 @@ class RemoteScope(StrEnum):
 
 
 class Seniority(StrEnum):
+    INTERN = "intern"  # prácticas / beca
     JUNIOR = "junior"
     MID = "mid"
     SENIOR = "senior"
     LEAD = "lead"
     UNKNOWN = "unknown"
+
+
+SENIORITY_LABELS = {
+    "intern": "Prácticas",
+    "junior": "Junior",
+    "mid": "Mid",
+    "senior": "Senior",
+    "lead": "Lead",
+    "unknown": "Sin indicar",
+}
 
 
 class OfferStatus(StrEnum):
