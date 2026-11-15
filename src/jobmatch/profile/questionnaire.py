@@ -57,7 +57,12 @@ STEPS: list[Step] = [
     Step(
         "Habilidades",
         [
-            Question("skills", "Tecnologías (nivel 1–5, marca las imprescindibles)", "skills"),
+            Question(
+                "skills",
+                "Tecnologías que usas, con tu nivel de 1 a 5",
+                "skills",
+                help="Consulta abajo qué implica cada nivel.",
+            ),
             Question("learning", "Tecnologías que quieres aprender", "tags"),
         ],
     ),

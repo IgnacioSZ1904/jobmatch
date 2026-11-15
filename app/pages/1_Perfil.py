@@ -4,7 +4,14 @@ import pandas as pd
 import streamlit as st
 
 from jobmatch.normalize.skills import skill_names
-from jobmatch.profile.model import Profile
+from jobmatch.profile.linkedin import parse_linkedin_pdf
+from jobmatch.profile.model import (
+    MUST_HAVE_HELP,
+    SKILL_LEVELS,
+    Profile,
+    parse_skill_level_label,
+    skill_level_label,
+)
 from jobmatch.profile.questionnaire import STEPS, Question
 from jobmatch.profile.store import load_profile, load_raw_profile, save_profile
 
@@ -23,6 +30,38 @@ if "draft" not in st.session_state:
     st.session_state.step = 0
 
 draft: dict = st.session_state.draft
+
+
+def reset_widgets() -> None:
+    """Fuerza widgets nuevos (claves nuevas) para que muestren el borrador actualizado."""
+    st.session_state.form_version = st.session_state.get("form_version", 0) + 1
+
+
+with st.expander("📥 Importar desde LinkedIn", expanded=st.session_state.step == 0):
+    st.markdown(
+        "En tu perfil de LinkedIn pulsa **Más → Guardar en PDF** y sube aquí el archivo. "
+        "Se rellenarán tecnologías, años de experiencia, puesto, ubicación, idiomas y "
+        "resumen; después revisa cada paso y ajusta lo que haga falta."
+    )
+    uploaded = st.file_uploader("PDF del perfil", type="pdf", key="linkedin_pdf")
+    if uploaded and st.button("Importar", type="primary"):
+        imported = parse_linkedin_pdf(uploaded.getvalue())
+        for warning in imported.warnings:
+            st.warning(warning)
+        if imported.fields:
+            draft.update(imported.fields)
+            reset_widgets()
+            st.session_state.step = 0
+            st.session_state.imported = sorted(imported.fields)
+            st.rerun()
+
+if st.session_state.get("imported"):
+    st.success(
+        "Importado de LinkedIn: "
+        + ", ".join(st.session_state.pop("imported"))
+        + ". Revisa los pasos y ajusta los niveles."
+    )
+
 step_idx: int = st.session_state.step
 step = STEPS[step_idx]
 st.progress((step_idx + 1) / len(STEPS), text=f"Paso {step_idx + 1}/{len(STEPS)}: {step.title}")
@@ -30,7 +69,7 @@ st.progress((step_idx + 1) / len(STEPS), text=f"Paso {step_idx + 1}/{len(STEPS)}
 
 def widget(q: Question):
     value = draft.get(q.field)
-    key = f"q_{q.field}"
+    key = f"q_{q.field}_{st.session_state.get('form_version', 0)}"
     if q.kind == "multiselect":
         return st.multiselect(
             q.label,
@@ -60,7 +99,9 @@ def widget(q: Question):
         )
         return [t.strip() for t in text.split(",") if t.strip()]
     if q.kind == "skills":
-        df = pd.DataFrame(value or [], columns=["name", "level", "must_have"])
+        rows = [{**r, "level": skill_level_label(int(r.get("level") or 3))} for r in value or []]
+        df = pd.DataFrame(rows, columns=["name", "level", "must_have"])
+        labels = [skill_level_label(n) for n in SKILL_LEVELS]
         edited = st.data_editor(
             df,
             num_rows="dynamic",
@@ -70,13 +111,31 @@ def widget(q: Question):
                 "name": st.column_config.SelectboxColumn(
                     "Tecnología", options=skill_names(), required=True
                 ),
-                "level": st.column_config.NumberColumn(
-                    "Nivel", min_value=1, max_value=5, default=3
+                "level": st.column_config.SelectboxColumn(
+                    "Nivel",
+                    options=labels,
+                    default=labels[2],
+                    required=True,
+                    help="Mira la escala de niveles debajo de la tabla.",
                 ),
-                "must_have": st.column_config.CheckboxColumn("Imprescindible", default=False),
+                "must_have": st.column_config.CheckboxColumn(
+                    "Imprescindible", default=False, help=MUST_HAVE_HELP
+                ),
             },
         )
-        return [r for r in edited.to_dict("records") if r.get("name")]
+        scale = "\n".join(
+            f"- **{skill_level_label(n)}**: {desc}" for n, (_, desc) in SKILL_LEVELS.items()
+        )
+        st.markdown(f"**Escala de niveles**\n\n{scale}\n\n**Imprescindible**: {MUST_HAVE_HELP}")
+        return [
+            {
+                **r,
+                "level": parse_skill_level_label(r.get("level") or labels[2]),
+                "must_have": bool(r.get("must_have")),
+            }
+            for r in edited.to_dict("records")
+            if r.get("name")
+        ]
     if q.kind == "languages":
         df = pd.DataFrame(value or [], columns=["code", "level"])
         edited = st.data_editor(

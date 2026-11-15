@@ -10,6 +10,9 @@ semántica con embeddings). Cada oferta muestra el **desglose de por qué** tien
 
 - **Cuestionario de perfil** por pasos (roles, nivel, tecnologías, modalidad, salario, idiomas,
   exclusiones y un resumen libre), guardado en `data/profile.yaml`.
+- **Importación desde LinkedIn**: sube el PDF de tu perfil (*Más → Guardar en PDF*) y se
+  prerrellenan tecnologías, años de experiencia, puesto, ubicación, idiomas y resumen.
+- **Escala de niveles 1–5** explicada (Básico, Principiante, Autónomo, Avanzado, Experto).
 - **Fuentes**: Remotive, Arbeitnow y RemoteOK (APIs públicas, sin credenciales).
 - **Normalización**: tecnologías con taxonomía y alias, seniority y años, salario a EUR/año,
   modalidad (remoto/híbrido/presencial), alcance del remoto, país e idiomas.

@@ -13,6 +13,24 @@ ROLES = ["backend", "frontend", "fullstack", "data", "devops", "mobile", "qa", "
 CONTRACTS = ["indefinido", "freelance", "temporal"]
 LANGUAGE_LEVELS = ["A2", "B1", "B2", "C1", "C2", "nativo"]
 
+# Escala de dominio de una tecnología: (nombre corto, qué implica)
+SKILL_LEVELS: dict[int, tuple[str, str]] = {
+    1: ("Básico", "Conozco los conceptos o he seguido tutoriales; necesito ayuda constante."),
+    2: ("Principiante", "La he usado en clase, prácticas o proyectos pequeños (p. ej. el TFG)."),
+    3: ("Autónomo", "La uso en proyectos reales sin ayuda y resuelvo los problemas habituales."),
+    4: ("Avanzado", "Aplico buenas prácticas, testing y rendimiento; reviso código de otros."),
+    5: ("Experto", "Diseño soluciones complejas, conozco sus internos y enseño a otros."),
+}
+MUST_HAVE_HELP = "Tecnología central para ti: en las ofertas que la piden cuenta el doble."
+
+
+def skill_level_label(level: int) -> str:
+    return f"{level} · {SKILL_LEVELS[level][0]}"
+
+
+def parse_skill_level_label(label: str | int) -> int:
+    return int(str(label).split("·")[0].strip())
+
 
 class SkillLevel(BaseModel):
     name: str
