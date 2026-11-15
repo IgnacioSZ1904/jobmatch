@@ -1,0 +1,64 @@
+# nombre canónico: { category, aliases }
+# Los alias se buscan con límites de palabra, sin distinguir mayúsculas.
+python: {category: language, aliases: [python3]}
+java: {category: language, aliases: []}
+javascript: {category: language, aliases: [js, ecmascript]}
+typescript: {category: language, aliases: [ts]}
+go: {category: language, aliases: [golang]}
+rust: {category: language, aliases: []}
+c#: {category: language, aliases: [csharp, c sharp]}
+c++: {category: language, aliases: [cpp]}
+kotlin: {category: language, aliases: []}
+swift: {category: language, aliases: []}
+php: {category: language, aliases: []}
+ruby: {category: language, aliases: []}
+scala: {category: language, aliases: []}
+sql: {category: language, aliases: []}
+django: {category: framework, aliases: []}
+flask: {category: framework, aliases: []}
+fastapi: {category: framework, aliases: []}
+spring: {category: framework, aliases: [spring boot, springboot]}
+.net: {category: framework, aliases: [dotnet, asp.net]}
+node.js: {category: framework, aliases: [node, nodejs]}
+express: {category: framework, aliases: [express.js]}
+nestjs: {category: framework, aliases: [nest.js]}
+react: {category: framework, aliases: [react.js, reactjs]}
+angular: {category: framework, aliases: [angularjs]}
+vue: {category: framework, aliases: [vue.js, vuejs]}
+next.js: {category: framework, aliases: [nextjs]}
+rails: {category: framework, aliases: [ruby on rails]}
+laravel: {category: framework, aliases: []}
+flutter: {category: framework, aliases: []}
+react native: {category: framework, aliases: []}
+pandas: {category: data, aliases: []}
+numpy: {category: data, aliases: []}
+pytorch: {category: ml, aliases: [torch]}
+tensorflow: {category: ml, aliases: []}
+scikit-learn: {category: ml, aliases: [sklearn]}
+llm: {category: ml, aliases: [llms, large language models]}
+langchain: {category: ml, aliases: [langgraph]}
+spark: {category: data, aliases: [pyspark, apache spark]}
+airflow: {category: data, aliases: []}
+kafka: {category: data, aliases: []}
+postgresql: {category: database, aliases: [postgres, psql]}
+mysql: {category: database, aliases: [mariadb]}
+mongodb: {category: database, aliases: [mongo]}
+redis: {category: database, aliases: []}
+elasticsearch: {category: database, aliases: [elastic]}
+docker: {category: devops, aliases: []}
+kubernetes: {category: devops, aliases: [k8s]}
+terraform: {category: devops, aliases: []}
+aws: {category: cloud, aliases: [amazon web services]}
+gcp: {category: cloud, aliases: [google cloud]}
+azure: {category: cloud, aliases: []}
+linux: {category: devops, aliases: []}
+git: {category: tool, aliases: [github, gitlab]}
+ci/cd: {category: devops, aliases: [cicd, github actions, jenkins]}
+graphql: {category: api, aliases: []}
+rest: {category: api, aliases: [rest api, restful]}
+microservices: {category: architecture, aliases: [microservicios]}
+html: {category: frontend, aliases: [html5]}
+css: {category: frontend, aliases: [css3, tailwind, sass]}
+selenium: {category: qa, aliases: []}
+cypress: {category: qa, aliases: []}
+pytest: {category: qa, aliases: []}
