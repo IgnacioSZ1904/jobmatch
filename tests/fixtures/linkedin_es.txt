@@ -1,0 +1,34 @@
+Contactar
+ignacio.ejemplo@example.com
+www.linkedin.com/in/ignacio-ejemplo (LinkedIn)
+github.com/IgnacioSZ1904 (Other)
+Aptitudes principales
+Python
+FastAPI
+React
+Languages
+Español (Native or Bilingual)
+Inglés (Professional Working)
+Certifications
+AWS Cloud Practitioner
+Ignacio Ejemplo
+Backend Developer | Python · FastAPI · LLMs
+Málaga, Andalucía, España
+Extracto
+Ingeniero de software recién graduado. Me interesa el desarrollo backend con Python
+y los sistemas multiagente con LLM.
+Experiencia
+Universidad de Málaga
+Becario de investigación
+octubre de 2025 - Present (1 año 2 meses)
+Málaga, Andalucía, España
+Sistema multiagente con LangGraph, FastAPI y PostgreSQL desplegado con Docker.
+Acme Labs
+Desarrollador backend en prácticas
+marzo de 2025 - noviembre de 2025 (9 meses)
+Desarrollo de APIs REST en Python y Django.
+Page 1 of 2
+Educación
+Universidad de Málaga
+Grado en Ingeniería del Software · (2021 - 2025)
+Page 2 of 2
