@@ -47,3 +47,47 @@ def test_remoteok_skips_legal_notice(monkeypatch):
     assert offer.remote_scope == RemoteScope.WORLDWIDE
     assert offer.salary_max == 92000
     assert {"python", "pytorch", "llm", "fastapi", "langchain"} <= set(offer.skills)
+
+
+def test_infojobs_to_offer():
+    from jobmatch.connectors.infojobs import InfoJobsConnector
+
+    raws = load_fixture("infojobs.json")["offers"]
+    conn = InfoJobsConnector("id", "secret")
+    junior, practicas, remoto = (conn.to_offer(r) for r in raws)
+    assert junior.company == "Soluciones Andaluzas S.L."
+    assert junior.modality == Modality.HYBRID and junior.seniority == Seniority.JUNIOR
+    assert (junior.salary_min, junior.salary_max) == (24000, 30000)
+    assert junior.years_required == 1 and junior.contract_type == "indefinido"
+    assert {"python", "django", "postgresql"} <= set(junior.skills)
+    assert practicas.seniority == Seniority.INTERN and practicas.contract_type == "prácticas"
+    assert practicas.modality == Modality.ONSITE and practicas.salary_max == 9600
+    assert remoto.modality == Modality.REMOTE and remoto.remote_scope == RemoteScope.SPAIN
+    assert remoto.seniority == Seniority.MID and remoto.salary_max is None
+
+
+def test_infojobs_disabled_without_credentials(monkeypatch):
+    from jobmatch.connectors.infojobs import InfoJobsConnector
+
+    monkeypatch.delenv("INFOJOBS_CLIENT_ID", raising=False)
+    monkeypatch.delenv("INFOJOBS_CLIENT_SECRET", raising=False)
+    assert not InfoJobsConnector().is_configured()
+
+
+def test_infojobs_fetch_uses_basic_auth(monkeypatch):
+    from jobmatch.connectors import infojobs
+    from jobmatch.connectors.base import SearchQuery
+
+    calls = []
+
+    def fake_get_json(url, params, client):
+        calls.append((params["q"], client.auth))
+        return load_fixture("infojobs.json")
+
+    monkeypatch.setattr(infojobs, "get_json", fake_get_json)
+    raws = infojobs.InfoJobsConnector("id", "secret").fetch(
+        SearchQuery(keywords=["python", "react"])
+    )
+    assert len(raws) == 3  # sin repetidos entre búsquedas
+    assert [q for q, _ in calls] == ["python", "react"]
+    assert calls[0][1] is not None

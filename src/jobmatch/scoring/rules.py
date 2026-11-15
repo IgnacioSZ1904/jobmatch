@@ -4,12 +4,19 @@ from __future__ import annotations
 
 import re
 
-from jobmatch.models import JobOffer, Modality, RemoteScope, Seniority
+from jobmatch.models import SENIORITY_LABELS, JobOffer, Modality, RemoteScope, Seniority
 from jobmatch.normalize.text import fold
 from jobmatch.profile.model import Profile
 
 Component = tuple[float, str]
-_LEVELS = [Seniority.JUNIOR, Seniority.MID, Seniority.SENIOR, Seniority.LEAD]
+# Prácticas y junior cuentan como el mismo escalón al comparar niveles
+_RANK = {
+    Seniority.INTERN: 0,
+    Seniority.JUNIOR: 0,
+    Seniority.MID: 1,
+    Seniority.SENIOR: 2,
+    Seniority.LEAD: 3,
+}
 NEUTRAL = 0.5
 
 
@@ -87,9 +94,11 @@ def skills_component(profile: Profile, offer: JobOffer) -> Component:
 
 def seniority_component(profile: Profile, offer: JobOffer) -> Component:
     if offer.seniority != Seniority.UNKNOWN:
-        diff = abs(_LEVELS.index(offer.seniority) - _LEVELS.index(profile.seniority))
+        diff = abs(_RANK[offer.seniority] - _RANK[profile.seniority])
         value = {0: 1.0, 1: 0.5}.get(diff, 0.0)
-        detail = f"Pide {offer.seniority.value}, tú {profile.seniority.value}"
+        detail = (
+            f"Pide {SENIORITY_LABELS[offer.seniority]}, tú {SENIORITY_LABELS[profile.seniority]}"
+        )
         if offer.years_required:
             detail += f" ({offer.years_required}+ años)"
         return value, detail

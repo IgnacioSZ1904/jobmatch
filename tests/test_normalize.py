@@ -72,3 +72,20 @@ def test_modality_and_scope():
 def test_languages_and_html():
     assert detect_languages("Fluent English required. German is a plus") == ["en", "de"]
     assert html_to_text("<p>Hola &amp; adiós</p><ul><li>uno</li></ul>") == "Hola & adiós\n\nuno"
+
+
+@pytest.mark.parametrize(
+    ("title", "desc", "level"),
+    [
+        ("Prácticas Desarrollo Web", "", Seniority.INTERN),
+        ("Becario/a de desarrollo", "", Seniority.INTERN),
+        ("Software Engineering Internship", "", Seniority.INTERN),
+        ("Backend Developer", "Aplicamos buenas prácticas de código limpio", Seniority.UNKNOWN),
+    ],
+)
+def test_detect_internship(title, desc, level):
+    assert detect_seniority(title, desc)[0] == level
+
+
+def test_monthly_salary_infojobs_style():
+    assert parse_salary("800 € - 800 € Bruto/mes") == (9600, 9600)

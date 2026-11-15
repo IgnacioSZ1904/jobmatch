@@ -79,3 +79,40 @@ def test_status_and_rescore_on_profile_change(repo, profile):
     assert list_offers(repo, profile) == []  # puntuaciones del perfil anterior no valen
     assert score_pending(repo, profile) == 5
     assert list_offers(repo, profile)
+
+
+def test_import_manual_offer(repo, profile):
+    from jobmatch.services import import_manual_offer
+
+    offer, is_new = import_manual_offer(
+        repo,
+        profile,
+        url="https://www.linkedin.com/jobs/view/123",
+        title="Junior Python Developer",
+        company="Startup Málaga",
+        location="Málaga (híbrido)",
+        description="Buscamos perfil junior con Python, FastAPI y PostgreSQL.",
+    )
+    assert is_new and offer.source == "manual"
+    assert offer.modality == "hybrid" and offer.seniority == "junior"
+    row = list_offers(repo, profile)[0]
+    assert row.offer.id == offer.id and row.score.total > 60
+
+    # Pegarla otra vez actualiza en vez de duplicar
+    _, again = import_manual_offer(
+        repo,
+        profile,
+        url="https://www.linkedin.com/jobs/view/123",
+        title="Junior Python Developer",
+        description="Texto actualizado con Python",
+    )
+    assert not again and len(list_offers(repo, profile)) == 1
+
+
+def test_import_manual_requires_text(repo, profile):
+    import pytest
+
+    from jobmatch.services import import_manual_offer
+
+    with pytest.raises(ValueError):
+        import_manual_offer(repo, profile, url="", title="", description="")

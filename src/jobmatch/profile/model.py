@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field, field_validator
 from jobmatch.models import Modality, Seniority
 
 ROLES = ["backend", "frontend", "fullstack", "data", "devops", "mobile", "qa", "ml"]
-CONTRACTS = ["indefinido", "freelance", "temporal"]
+CONTRACTS = ["indefinido", "temporal", "prácticas", "freelance"]
 LANGUAGE_LEVELS = ["A2", "B1", "B2", "C1", "C2", "nativo"]
 
 # Escala de dominio de una tecnología: (nombre corto, qué implica)

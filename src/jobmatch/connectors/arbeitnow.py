@@ -29,7 +29,11 @@ class ArbeitnowConnector:
 
     def to_offer(self, raw: RawOffer) -> JobOffer:
         job_types = [t.lower() for t in raw.get("job_types") or []]
-        contract = "temporal" if any("intern" in t or "part" in t for t in job_types) else None
+        contract = None
+        if any("intern" in t for t in job_types):
+            contract = "prácticas"
+        elif any("part" in t for t in job_types):
+            contract = "temporal"
         offer = JobOffer(
             id=offer_id(self.name, raw["slug"]),
             source=self.name,

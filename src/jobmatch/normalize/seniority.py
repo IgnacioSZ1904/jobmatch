@@ -10,7 +10,15 @@ from jobmatch.normalize.text import fold
 _LEVELS: list[tuple[Seniority, re.Pattern[str]]] = [
     (Seniority.LEAD, re.compile(r"\b(lead|principal|staff|head of|tech lead|lider)\b")),
     (Seniority.SENIOR, re.compile(r"\b(senior|sr\.?|snr)\b")),
-    (Seniority.JUNIOR, re.compile(r"\b(junior|jr\.?|entry[- ]level|graduate|trainee|intern)\b")),
+    # "prácticas" sin confundir con "buenas/mejores prácticas"
+    (
+        Seniority.INTERN,
+        re.compile(
+            r"(?<!buenas )(?<!mejores )\bpracticas\b|\bbecari[oa]s?\b|\bintern(ship)?s?\b"
+            r"|\btrainee\b|\bbeca\b"
+        ),
+    ),
+    (Seniority.JUNIOR, re.compile(r"\b(junior|jr\.?|entry[- ]level|graduate)\b")),
     (Seniority.MID, re.compile(r"\b(mid|middle|intermediate|semi[- ]?senior|ssr)\b")),
 ]
 _YEARS = re.compile(
